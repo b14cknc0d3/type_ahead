@@ -226,6 +226,7 @@
 /// ```
 import 'dart:async';
 import 'dart:math';
+import 'dart:developer' as d;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1417,6 +1418,8 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
 
   Widget createSuggestionsWidget() {
     bool hasExtra = widget.extra != null;
+    int length =
+        hasExtra ? this._suggestions!.length + 1 : this._suggestions!.length;
     Widget child = ListView(
       padding: EdgeInsets.zero,
       primary: false,
@@ -1428,27 +1431,27 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
       reverse: widget.suggestionsBox!.direction == AxisDirection.down
           ? false
           : true, // reverses the list to start at the bottom
-      children: List.generate(
-          hasExtra ? this._suggestions!.length + 1 : this._suggestions!.length,
-          (index) {
-        if (index == this._suggestions!.length + 1) {
+      children: List.generate(length, (index) {
+        d.log("index ${index.toString()}: lenght ${length.toString()}");
+        if (index == (length - 1)) {
           return widget.extra!;
+        } else {
+          final suggestion = _suggestions!.elementAt(index);
+          final focusNode = _focusNodes[index];
+
+          return InkWell(
+            key: TestKeys.getSuggestionKey(index),
+            focusColor: Theme.of(context).hoverColor,
+            focusNode: focusNode,
+            child: widget.itemBuilder!(context, suggestion, widget.extra),
+            onTap: () {
+              // * we give the focus back to the text field
+              widget.giveTextFieldFocus();
+
+              widget.onSuggestionSelected!(suggestion);
+            },
+          );
         }
-        final suggestion = _suggestions!.elementAt(index);
-        final focusNode = _focusNodes[index];
-
-        return InkWell(
-          key: TestKeys.getSuggestionKey(index),
-          focusColor: Theme.of(context).hoverColor,
-          focusNode: focusNode,
-          child: widget.itemBuilder!(context, suggestion, widget.extra),
-          onTap: () {
-            // * we give the focus back to the text field
-            widget.giveTextFieldFocus();
-
-            widget.onSuggestionSelected!(suggestion);
-          },
-        );
       }),
     );
 
@@ -1460,7 +1463,7 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
     }
 
     return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.8, child: child);
+        height: MediaQuery.of(context).size.height * 0.7, child: child);
   }
 }
 
