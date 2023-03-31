@@ -1463,7 +1463,7 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
     }
 
     return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.7, child: child);
+        height: MediaQuery.of(context).size.height * 0.5, child: child);
   }
 }
 
