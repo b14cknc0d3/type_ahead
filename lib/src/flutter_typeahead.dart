@@ -248,6 +248,7 @@ class TypeAheadFormField<T> extends FormField<String> {
   /// The configuration of the [TextField](https://docs.flutter.io/flutter/material/TextField-class.html)
   /// that the TypeAhead widget displays
   final TextFieldConfiguration textFieldConfiguration;
+  final Widget? extra;
 
   /// Creates a [TypeAheadFormField]
   TypeAheadFormField(
@@ -272,6 +273,7 @@ class TypeAheadFormField<T> extends FormField<String> {
       SuggestionsBoxController? suggestionsBoxController,
       required SuggestionSelectionCallback<T> onSuggestionSelected,
       required ItemBuilder<T> itemBuilder,
+      required this.extra,
       required SuggestionsCallback<T> suggestionsCallback,
       double suggestionsBoxVerticalOffset: 5.0,
       this.textFieldConfiguration: const TextFieldConfiguration(),
@@ -327,6 +329,7 @@ class TypeAheadFormField<T> extends FormField<String> {
                 onSuggestionSelected: onSuggestionSelected,
                 onSuggestionsBoxToggle: onSuggestionsBoxToggle,
                 itemBuilder: itemBuilder,
+                extra: extra,
                 suggestionsCallback: suggestionsCallback,
                 animationStart: animationStart,
                 animationDuration: animationDuration,
@@ -727,7 +730,7 @@ class TypeAheadField<T> extends StatefulWidget {
     this.minCharsForSuggestions: 0,
     this.onSuggestionsBoxToggle,
     this.hideKeyboardOnDrag: false,
-    this.extra,
+    required this.extra,
   })  : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
             direction == AxisDirection.down || direction == AxisDirection.up),
