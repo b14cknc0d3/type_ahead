@@ -693,6 +693,9 @@ class TypeAheadField<T> extends StatefulWidget {
   // Adds a callback for the suggestion box opening or closing
   final void Function(bool)? onSuggestionsBoxToggle;
 
+  //add extra
+  final Widget? extra;
+
   /// Creates a [TypeAheadField]
   TypeAheadField({
     Key? key,
@@ -724,6 +727,7 @@ class TypeAheadField<T> extends StatefulWidget {
     this.minCharsForSuggestions: 0,
     this.onSuggestionsBoxToggle,
     this.hideKeyboardOnDrag: false,
+    this.extra,
   })  : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
             direction == AxisDirection.down || direction == AxisDirection.up),
@@ -907,6 +911,7 @@ class _TypeAheadFieldState<T> extends State<TypeAheadField<T>>
       }
 
       final suggestionsList = _SuggestionsList<T>(
+          extra: widget.extra,
           suggestionsBox: _suggestionsBox,
           decoration: widget.suggestionsBoxDecoration,
           debounceDuration: widget.debounceDuration,
@@ -1048,6 +1053,7 @@ class _TypeAheadFieldState<T> extends State<TypeAheadField<T>>
 }
 
 class _SuggestionsList<T> extends StatefulWidget {
+  final Widget? extra;
   final _SuggestionsBox? suggestionsBox;
   final TextEditingController? controller;
   final bool getImmediateSuggestions;
@@ -1105,6 +1111,7 @@ class _SuggestionsList<T> extends StatefulWidget {
     required this.onSuggestionFocus,
     required this.onKeyEvent,
     required this.hideKeyboardOnDrag,
+    this.extra,
   });
 
   @override
@@ -1406,6 +1413,7 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
   }
 
   Widget createSuggestionsWidget() {
+    bool hasExtra = widget.extra != null;
     Widget child = ListView(
       padding: EdgeInsets.zero,
       primary: false,
@@ -1417,7 +1425,12 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
       reverse: widget.suggestionsBox!.direction == AxisDirection.down
           ? false
           : true, // reverses the list to start at the bottom
-      children: List.generate(this._suggestions!.length, (index) {
+      children: List.generate(
+          hasExtra ? this._suggestions!.length + 1 : this._suggestions!.length,
+          (index) {
+        if (index == this._suggestions!.length + 1) {
+          return widget.extra!;
+        }
         final suggestion = _suggestions!.elementAt(index);
         final focusNode = _focusNodes[index];
 
@@ -1425,7 +1438,7 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
           key: TestKeys.getSuggestionKey(index),
           focusColor: Theme.of(context).hoverColor,
           focusNode: focusNode,
-          child: widget.itemBuilder!(context, suggestion),
+          child: widget.itemBuilder!(context, suggestion, widget.extra),
           onTap: () {
             // * we give the focus back to the text field
             widget.giveTextFieldFocus();
@@ -1443,7 +1456,8 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
       );
     }
 
-    return child;
+    return SizedBox(
+        height: MediaQuery.of(context).size.height * 0.8, child: child);
   }
 }
 

@@ -491,6 +491,9 @@ class CupertinoTypeAheadField<T> extends StatefulWidget {
   /// Defaults to false
   final bool hideKeyboardOnDrag;
 
+  //extra on itembuilder
+  final Widget? extra;
+
   /// Creates a [CupertinoTypeAheadField]
   CupertinoTypeAheadField({
     Key? key,
@@ -519,6 +522,7 @@ class CupertinoTypeAheadField<T> extends StatefulWidget {
     this.autoFlipDirection: false,
     this.minCharsForSuggestions: 0,
     this.hideKeyboardOnDrag: true,
+    this.extra,
   })  : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
             direction == AxisDirection.down || direction == AxisDirection.up),
@@ -660,6 +664,7 @@ class _CupertinoTypeAheadFieldState<T> extends State<CupertinoTypeAheadField<T>>
   void _initOverlayEntry() {
     this._suggestionsBox!._overlayEntry = OverlayEntry(builder: (context) {
       final suggestionsList = _SuggestionsList<T>(
+        extra: widget.extra,
         suggestionsBox: _suggestionsBox,
         decoration: widget.suggestionsBoxDecoration,
         debounceDuration: widget.debounceDuration,
@@ -799,6 +804,7 @@ class _SuggestionsList<T> extends StatefulWidget {
   final bool? keepSuggestionsOnLoading;
   final int? minCharsForSuggestions;
   final bool hideKeyboardOnDrag;
+  final Widget? extra;
 
   _SuggestionsList({
     required this.suggestionsBox,
@@ -822,6 +828,7 @@ class _SuggestionsList<T> extends StatefulWidget {
     this.keepSuggestionsOnLoading,
     this.minCharsForSuggestions,
     this.hideKeyboardOnDrag: false,
+    this.extra,
   });
 
   @override
@@ -1129,7 +1136,7 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
         children: this._suggestions!.map((T suggestion) {
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
-            child: widget.itemBuilder!(context, suggestion),
+            child: widget.itemBuilder!(context, suggestion, widget.extra),
             onTap: () {
               widget.onSuggestionSelected!(suggestion);
             },
