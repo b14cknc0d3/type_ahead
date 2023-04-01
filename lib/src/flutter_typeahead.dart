@@ -1417,9 +1417,7 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
   }
 
   Widget createSuggestionsWidget() {
-    bool hasExtra = widget.extra != null;
-    int length =
-        hasExtra ? this._suggestions!.length + 1 : this._suggestions!.length;
+    int length = this._suggestions!.length;
     Widget child = ListView(
       padding: EdgeInsets.zero,
       primary: false,
@@ -1431,11 +1429,11 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
       reverse: widget.suggestionsBox!.direction == AxisDirection.down
           ? false
           : true, // reverses the list to start at the bottom
-      children: List.generate(length, (index) {
-        d.log("index ${index.toString()}: lenght ${length.toString()}");
-        if (index == (length - 1)) {
-          return widget.extra!;
-        } else {
+      children: [
+        widget.extra!,
+        ...List.generate(length, (index) {
+          d.log("index ${index.toString()}: lenght ${length.toString()}");
+
           final suggestion = _suggestions!.elementAt(index);
           final focusNode = _focusNodes[index];
 
@@ -1451,8 +1449,8 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
               widget.onSuggestionSelected!(suggestion);
             },
           );
-        }
-      }),
+        }),
+      ],
     );
 
     if (widget.decoration!.hasScrollbar) {
@@ -1462,8 +1460,7 @@ class _SuggestionsListState<T> extends State<_SuggestionsList<T>>
       );
     }
 
-    return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.5 - 32, child: child);
+    return child;
   }
 }
 
